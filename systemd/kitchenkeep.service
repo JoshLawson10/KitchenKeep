@@ -1,0 +1,21 @@
+[Unit]
+Description=KitchenKeep
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=kitchenkeep
+WorkingDirectory=/opt/kitchenkeep/src
+EnvironmentFile=/opt/kitchenkeep/.env
+ExecStart=/opt/kitchenkeep/venv/bin/uvicorn app.main:app \
+    --host ${APP_HOST} \
+    --port ${APP_PORT} \
+    --workers 1
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

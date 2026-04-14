@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Recipe — KitchenKeep</title>
+  <meta name="description" content="Add or edit a recipe in your collection." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-page="edit">
+
+  <!-- ---- Site Header ---- -->
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="site-header__logo" aria-label="KitchenKeep home">
+        <span class="logo-icon" aria-hidden="true">🍳</span>
+        KitchenKeep
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="page-form">
+
+        <!-- Form header -->
+        <div class="form-header">
+          <h1 id="form-title">Add Recipe</h1>
+          <a href="index.html" class="back-link" style="margin:0;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            Back
+          </a>
+        </div>
+
+        <!-- Form-level error -->
+        <div id="form-error" class="inline-error" role="alert"></div>
+
+        <!-- ---- Basic Info ---- -->
+        <section class="form-section" aria-labelledby="section-basic">
+          <h2 id="section-basic">Basic Info</h2>
+          <div class="form-grid">
+            <div class="form-group col-full">
+              <label for="f-title">Recipe title <span aria-hidden="true">*</span></label>
+              <input id="f-title" type="text" placeholder="e.g. Classic Beef Bolognese" required
+                     autocomplete="off" />
+              <span id="title-error" class="field-error" role="alert">Title is required.</span>
+            </div>
+            <div class="form-group col-full">
+              <label for="f-desc">
+                Description <span class="label-optional">(optional)</span>
+              </label>
+              <textarea id="f-desc" placeholder="A brief description of the dish…"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---- Time & Servings ---- -->
+        <section class="form-section" aria-labelledby="section-timing">
+          <h2 id="section-timing">Time &amp; Servings</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="f-servings">
+                Servings <span class="label-optional">(optional)</span>
+              </label>
+              <input id="f-servings" type="number" min="1" placeholder="4" />
+            </div>
+            <div class="form-group">
+              <label for="f-prep">
+                Prep time <span class="label-optional">(minutes)</span>
+              </label>
+              <input id="f-prep" type="number" min="0" placeholder="15" />
+            </div>
+            <div class="form-group">
+              <label for="f-cook">
+                Cook time <span class="label-optional">(minutes)</span>
+              </label>
+              <input id="f-cook" type="number" min="0" placeholder="30" />
+            </div>
+          </div>
+        </section>
+
+        <!-- ---- Tags & Media ---- -->
+        <section class="form-section" aria-labelledby="section-tags">
+          <h2 id="section-tags">Tags &amp; Media</h2>
+          <div class="form-grid">
+            <div class="form-group col-full">
+              <label for="f-tags">
+                Tags <span class="label-optional">(comma-separated)</span>
+              </label>
+              <input id="f-tags" type="text"
+                     placeholder="italian, pasta, dinner, vegetarian" autocomplete="off" />
+              <div id="f-tags-preview" class="tag-pills-preview" aria-label="Tag preview"></div>
+            </div>
+            <div class="form-group col-full">
+              <label for="f-image-url">
+                Image URL <span class="label-optional">(optional)</span>
+              </label>
+              <input id="f-image-url" type="url" placeholder="https://example.com/image.jpg" />
+            </div>
+            <div class="form-group col-full">
+              <label for="f-source-url">
+                Source URL <span class="label-optional">(original recipe link)</span>
+              </label>
+              <input id="f-source-url" type="url" placeholder="https://example.com/recipe" />
+            </div>
+          </div>
+        </section>
+
+        <!-- ---- Ingredients ---- -->
+        <section class="form-section" aria-labelledby="section-ingredients">
+          <h2 id="section-ingredients">Ingredients <span aria-hidden="true">*</span></h2>
+          <p class="text-sm text-muted" style="margin-bottom:.75rem;">
+            Drag the ⠿ handle to reorder. Amount and unit are optional for items like "salt to taste".
+          </p>
+          <div id="ing-list" class="dynamic-list" aria-label="Ingredient rows"></div>
+          <span id="ing-error" class="field-error" role="alert">Add at least one ingredient.</span>
+          <button id="add-ing-btn" type="button" class="btn btn-ghost btn-sm" style="margin-top:.5rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add Ingredient
+          </button>
+        </section>
+
+        <!-- ---- Steps ---- -->
+        <section class="form-section" aria-labelledby="section-steps">
+          <h2 id="section-steps">Steps <span aria-hidden="true">*</span></h2>
+          <p class="text-sm text-muted" style="margin-bottom:.75rem;">
+            One step per row. Drag to reorder.
+          </p>
+          <div id="steps-list" class="dynamic-list" aria-label="Step rows"></div>
+          <span id="steps-error" class="field-error" role="alert">Add at least one step.</span>
+          <button id="add-step-btn" type="button" class="btn btn-ghost btn-sm" style="margin-top:.5rem;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add Step
+          </button>
+        </section>
+
+        <!-- ---- Notes ---- -->
+        <section class="form-section" aria-labelledby="section-notes">
+          <h2 id="section-notes">Notes <span class="label-optional">(optional)</span></h2>
+          <textarea id="f-notes" style="min-height:100px;"
+                    placeholder="Substitutions, storage tips, variations…"></textarea>
+        </section>
+
+        <!-- ---- Form Actions ---- -->
+        <div class="form-actions">
+          <button id="save-btn" class="btn btn-primary">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Recipe
+          </button>
+          <button id="cancel-btn" type="button" class="btn btn-ghost">Cancel</button>
+        </div>
+
+      </div><!-- /page-form -->
+    </div>
+  </main>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

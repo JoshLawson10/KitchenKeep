@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KitchenKeep — Your Recipe Collection</title>
+  <meta name="description" content="Browse and search your personal recipe collection." />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.9.12/htmx.min.js" defer></script>
+</head>
+<body data-page="index">
+
+  <!-- ---- Site Header ---- -->
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a href="index.html" class="site-header__logo" aria-label="KitchenKeep home">
+        <span class="logo-icon" aria-hidden="true">🍳</span>
+        KitchenKeep
+      </a>
+      <div class="site-header__actions">
+        <button id="paste-url-btn" class="btn btn-outline" aria-label="Add recipe from URL">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          Paste URL
+        </button>
+        <a id="add-recipe-btn" href="edit.html" class="btn btn-primary" aria-label="Add a new recipe manually">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Add Recipe
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ---- Main Content ---- -->
+  <main>
+    <div class="container">
+
+      <!-- Search + Filter toolbar -->
+      <div class="toolbar" role="search">
+        <div class="search-wrap">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <circle cx="6.5" cy="6.5" r="5"/><path d="M10.5 10.5l3.5 3.5"/>
+          </svg>
+          <input
+            id="search-input"
+            type="search"
+            class="search-input"
+            placeholder="Search recipes, ingredients, tags…"
+            aria-label="Search recipes"
+            autocomplete="off"
+          />
+        </div>
+        <select id="tag-filter" class="select-filter" aria-label="Filter by tag">
+          <option value="">All tags</option>
+        </select>
+      </div>
+
+      <!-- Recipe card grid -->
+      <div id="recipe-grid" class="recipe-grid" role="list" aria-label="Recipe list"></div>
+
+      <!-- Empty state (hidden by JS when recipes exist) -->
+      <div id="empty-state" class="empty-state" style="display:none;" aria-live="polite">
+        <div class="empty-state__icon" aria-hidden="true">🍽</div>
+        <h2>No recipes yet</h2>
+        <p>Start building your collection — add a recipe manually or paste a URL to import one.</p>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:.5rem;">
+          <a href="edit.html" class="btn btn-primary">+ Add Recipe</a>
+          <button id="empty-paste-btn" class="btn btn-outline">Paste URL</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ---- URL Scrape Modal ---- -->
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal" id="url-modal">
+      <h2 id="modal-title">Import from URL</h2>
+      <p>Paste a link to a recipe page. The AI will extract the ingredients and steps for you to review.</p>
+
+      <div class="form-group">
+        <label for="url-input">Recipe URL</label>
+        <input
+          id="url-input"
+          type="url"
+          placeholder="https://example.com/my-favourite-pasta"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <!-- Loading status -->
+      <div id="scrape-status" class="scrape-status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <span id="scrape-status-text">Fetching page…</span>
+      </div>
+
+      <!-- Error message -->
+      <div id="scrape-error" class="scrape-error" role="alert"></div>
+
+      <div class="modal-actions">
+        <button id="modal-close-btn" class="btn btn-ghost">Cancel</button>
+        <button id="scrape-btn" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Scrape Recipe
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container (populated by JS) -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+  <script>
+    // Wire up empty state paste button
+    document.addEventListener('DOMContentLoaded', function() {
+      const emptyPaste = document.getElementById('empty-paste-btn');
+      const pasteBtn = document.getElementById('paste-url-btn');
+      if (emptyPaste && pasteBtn) {
+        emptyPaste.addEventListener('click', function() { pasteBtn.click(); });
+      }
+    });
+  </script>
+</body>
+</html>
