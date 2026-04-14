@@ -536,40 +536,52 @@
     function renderIngredients(scale) {
       if (!ingList) return;
       ingList.innerHTML = "";
-      baseIngredients.forEach((ing) => {
-        const li = document.createElement("li");
-        li.className = "ingredient-item";
-
-        const amountEl = document.createElement("span");
-        amountEl.className = "ingredient-amount";
-
-        const parsed = App.parseFraction(ing.amount);
-        if (!isNaN(parsed)) {
-          amountEl.textContent = App.toFriendlyFraction(parsed * scale);
-        } else {
-          amountEl.textContent = ing.amount || "";
-        }
-        li.appendChild(amountEl);
-
-        if (ing.unit) {
-          const unitEl = document.createElement("span");
-          unitEl.className = "ingredient-unit";
-          unitEl.textContent = ing.unit;
-          li.appendChild(unitEl);
+      
+      baseIngredients.forEach((section) => {
+        // Section Header
+        if (section.section_name) {
+          const hEl = document.createElement("li");
+          hEl.className = "ingredient-heading";
+          hEl.textContent = section.section_name;
+          ingList.appendChild(hEl);
         }
 
-        const nameEl = document.createElement("span");
-        nameEl.textContent = ing.name;
-        li.appendChild(nameEl);
+        // List inside section
+        (section.ingredients || []).forEach(ing => {
+          const li = document.createElement("li");
+          li.className = "ingredient-item";
 
-        if (ing.note) {
-          const noteEl = document.createElement("span");
-          noteEl.className = "ingredient-note";
-          noteEl.textContent = `(${ing.note})`;
-          li.appendChild(noteEl);
-        }
+          const amountEl = document.createElement("span");
+          amountEl.className = "ingredient-amount";
 
-        ingList.appendChild(li);
+          const parsed = App.parseFraction(ing.amount);
+          if (!isNaN(parsed)) {
+            amountEl.textContent = App.toFriendlyFraction(parsed * scale);
+          } else {
+            amountEl.textContent = ing.amount || "";
+          }
+          li.appendChild(amountEl);
+
+          if (ing.unit) {
+            const unitEl = document.createElement("span");
+            unitEl.className = "ingredient-unit";
+            unitEl.textContent = ing.unit;
+            li.appendChild(unitEl);
+          }
+
+          const nameEl = document.createElement("span");
+          nameEl.textContent = ing.name;
+          li.appendChild(nameEl);
+
+          if (ing.note) {
+            const noteEl = document.createElement("span");
+            noteEl.className = "ingredient-note";
+            noteEl.textContent = `(${ing.note})`;
+            li.appendChild(noteEl);
+          }
+
+          ingList.appendChild(li);
+        });
       });
     }
 
@@ -655,10 +667,13 @@
     }
     if (fTags) fTags.addEventListener("input", updateTagPills);
 
-    // --- Dynamic ingredient rows ---
+    // --- Dynamic ingredient sections ---
+    const sectionsContainer = document.getElementById("sections-container");
+    const addSectionBtn = document.getElementById("add-section-btn");
+
     let ingDragSrc = null;
 
-    function makeIngredientRow(data = {}) {
+    function makeIngredientRow(data = {}, parentList) {
       const row = document.createElement("div");
       row.className = "ingredient-row";
       row.draggable = true;
@@ -689,6 +704,7 @@
       name.type = "text";
       name.placeholder = "Ingredient";
       name.value = data.name || "";
+      name.className = "inp-name";
       name.setAttribute("aria-label", "Ingredient name");
       row.appendChild(name);
 
@@ -710,7 +726,7 @@
       });
       row.appendChild(removeBtn);
 
-      // Drag-and-drop
+      // Drag-and-drop within section
       row.addEventListener("dragstart", function (e) {
         ingDragSrc = row;
         e.dataTransfer.effectAllowed = "move";
@@ -726,7 +742,9 @@
       row.addEventListener("dragover", function (e) {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
-        if (ingDragSrc && ingDragSrc !== row) row.classList.add("drag-over");
+        if (ingDragSrc && ingDragSrc !== row && ingDragSrc.parentNode === parentList) {
+          row.classList.add("drag-over");
+        }
       });
       row.addEventListener("dragleave", function () {
         row.classList.remove("drag-over");
@@ -734,8 +752,8 @@
       row.addEventListener("drop", function (e) {
         e.preventDefault();
         row.classList.remove("drag-over");
-        if (ingDragSrc && ingDragSrc !== row) {
-          const allRows = [...ingList.querySelectorAll(".ingredient-row")];
+        if (ingDragSrc && ingDragSrc !== row && ingDragSrc.parentNode === parentList) {
+          const allRows = [...parentList.querySelectorAll(".ingredient-row")];
           const srcIdx = allRows.indexOf(ingDragSrc);
           const tgtIdx = allRows.indexOf(row);
           if (srcIdx < tgtIdx) {
@@ -749,10 +767,69 @@
       return row;
     }
 
-    function addIngredient(data = {}) {
-      ingList.appendChild(makeIngredientRow(data));
+    function addIngredientToSection(listEl, data = {}) {
+      listEl.appendChild(makeIngredientRow(data, listEl));
     }
-    if (addIngBtn) addIngBtn.addEventListener("click", () => addIngredient());
+
+    function makeSection(data = {}) {
+      const section = document.createElement("div");
+      section.className = "ingredient-section";
+
+      // Section Header (Input + Remove btn)
+      const header = document.createElement("div");
+      header.className = "ingredient-section-header";
+      
+      const titleInp = document.createElement("input");
+      titleInp.type = "text";
+      titleInp.className = "section-title";
+      titleInp.placeholder = "Section Name (e.g. For the Dressing)";
+      titleInp.value = data.section_name || "";
+      header.appendChild(titleInp);
+
+      const removeSecBtn = document.createElement("button");
+      removeSecBtn.type = "button";
+      removeSecBtn.className = "section-remove-btn";
+      removeSecBtn.title = "Remove Section";
+      removeSecBtn.textContent = "✕";
+      removeSecBtn.addEventListener("click", function() {
+        section.remove();
+      });
+      header.appendChild(removeSecBtn);
+
+      section.appendChild(header);
+
+      // Ingredients List
+      const listContainer = document.createElement("div");
+      listContainer.className = "dynamic-list";
+      section.appendChild(listContainer);
+
+      // Populate existing rows if any
+      (data.ingredients || []).forEach(ing => {
+        addIngredientToSection(listContainer, ing);
+      });
+
+      // Add Ingredient Button
+      const addRowBtn = document.createElement("button");
+      addRowBtn.type = "button";
+      addRowBtn.className = "btn btn-ghost btn-sm";
+      addRowBtn.textContent = "+ Add Ingredient";
+      addRowBtn.addEventListener("click", () => {
+        addIngredientToSection(listContainer);
+      });
+      section.appendChild(addRowBtn);
+
+      return section;
+    }
+
+    function addSection(data = {}) {
+      if (!sectionsContainer) return;
+      sectionsContainer.appendChild(makeSection({
+        section_name: data.section_name || "",
+        ingredients: data.ingredients && data.ingredients.length ? data.ingredients : [{}]
+      }));
+    }
+
+    if (addSectionBtn) addSectionBtn.addEventListener("click", () => addSection());
 
     // --- Dynamic step rows ---
     let stepDragSrc = null;
@@ -865,9 +942,14 @@
       }
       if (fNotes) fNotes.value = data.notes || "";
 
-      // Ingredients
-      if (ingList) ingList.innerHTML = "";
-      (data.ingredients || []).forEach((ing) => addIngredient(ing));
+      // Ingredients array is ingredient_sections from backend API!
+      if (sectionsContainer) sectionsContainer.innerHTML = "";
+      const sections = data.ingredient_sections || data.ingredients || [];
+      if (sections.length > 0) {
+        sections.forEach((sec) => addSection(sec));
+      } else {
+        addSection();
+      }
 
       // Steps
       if (stepsList) stepsList.innerHTML = "";
@@ -902,8 +984,8 @@
           App.showToast("Failed to load recipe.", "error");
         }
       } else {
-        // New recipe: add one empty ingredient and step row
-        addIngredient();
+        // New recipe: add one empty section and step row
+        addSection();
         addStep();
       }
     }
@@ -923,13 +1005,19 @@
         if (titleErr) titleErr.classList.remove("visible");
       }
 
-      // Ingredients
+      // Ingredients check
       const ingErr = document.getElementById("ing-error");
-      const ingRows = ingList ? ingList.querySelectorAll(".ingredient-row") : [];
-      const hasIngredient = [...ingRows].some((row) => {
-        const nameInput = row.querySelectorAll("input")[2];
-        return nameInput && nameInput.value.trim();
+      const sections = sectionsContainer ? sectionsContainer.querySelectorAll(".ingredient-section") : [];
+      
+      let hasIngredient = false;
+      sections.forEach(sec => {
+        const rows = sec.querySelectorAll(".ingredient-row");
+        rows.forEach(r => {
+          const nameInput = r.querySelector(".inp-name");
+          if (nameInput && nameInput.value.trim()) hasIngredient = true;
+        });
       });
+      
       if (!hasIngredient) {
         if (ingErr) ingErr.classList.add("visible");
         valid = false;
@@ -956,18 +1044,24 @@
 
     // --- Build payload from form ---
     function buildPayload() {
-      const ingRows = ingList ? ingList.querySelectorAll(".ingredient-row") : [];
-      const ingredients = [...ingRows]
-        .map((row) => {
-          const inputs = row.querySelectorAll("input");
+      const sectionNodes = sectionsContainer ? sectionsContainer.querySelectorAll(".ingredient-section") : [];
+      const ingredient_sections = [...sectionNodes].map((sec) => {
+        const sectionName = sec.querySelector(".section-title").value.trim() || null;
+        const rows = sec.querySelectorAll(".ingredient-row");
+        const items = [...rows].map((r) => {
           return {
-            amount: inputs[0] ? inputs[0].value.trim() : "",
-            unit: inputs[1] ? inputs[1].value.trim() || null : null,
-            name: inputs[2] ? inputs[2].value.trim() : "",
-            note: inputs[3] ? inputs[3].value.trim() || null : null,
+            amount: r.querySelector(".inp-amount") ? r.querySelector(".inp-amount").value.trim() : "",
+            unit: r.querySelector(".inp-unit") ? r.querySelector(".inp-unit").value.trim() || null : null,
+            name: r.querySelector(".inp-name") ? r.querySelector(".inp-name").value.trim() : "",
+            note: r.querySelector(".inp-note") ? r.querySelector(".inp-note").value.trim() || null : null,
           };
-        })
-        .filter((i) => i.name); // exclude blank rows
+        }).filter((i) => i.name);
+        
+        return {
+          section_name: sectionName,
+          ingredients: items
+        };
+      }).filter(s => s.ingredients.length > 0);
 
       const stepRows = stepsList ? stepsList.querySelectorAll(".step-row") : [];
       const steps = [...stepRows]
@@ -992,7 +1086,7 @@
         cook_time_mins: fCook ? parseInt(fCook.value) || null : null,
         tags,
         notes: fNotes ? fNotes.value.trim() || null : null,
-        ingredients,
+        ingredient_sections,
         steps,
       };
     }

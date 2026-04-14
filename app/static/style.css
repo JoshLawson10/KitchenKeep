@@ -474,6 +474,17 @@ h1, h2, h3, h4 { line-height: 1.25; font-weight: 700; }
 }
 
 .ingredient-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.ingredient-heading {
+  font-weight: 700;
+  color: var(--accent);
+  padding-top: 1rem;
+  padding-bottom: 0.25rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.25rem;
+}
 .ingredient-item {
   display: flex;
   align-items: baseline;
@@ -647,6 +658,51 @@ input.is-invalid, textarea.is-invalid {
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.ingredient-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.ingredient-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.section-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 1px solid transparent;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: all var(--transition);
+}
+.section-title:focus,
+.section-title:hover {
+  background: var(--bg);
+  border-color: var(--border);
+}
+.section-remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.section-remove-btn:hover {
+  color: var(--danger);
+  background: var(--danger-light);
 }
 
 .ingredient-row,

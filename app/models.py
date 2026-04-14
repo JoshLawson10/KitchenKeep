@@ -65,7 +65,10 @@ class Recipe(SQLModel, table=True):
     def ingredients_list(self) -> list[dict[str, Any]]:
         """Return ingredients decoded from JSON as a list of dicts."""
         try:
-            return json.loads(self.ingredients)
+            data = json.loads(self.ingredients)
+            if data and isinstance(data, list) and not ("ingredients" in data[0] or "items" in data[0]):
+                return [{"section_name": "", "ingredients": data}]
+            return data
         except (json.JSONDecodeError, TypeError):
             logger.warning("Failed to decode ingredients JSON for recipe %s", self.id)
             return []

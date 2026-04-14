@@ -73,12 +73,18 @@ app = FastAPI(
 # ---------------------------------------------------------------------------
 
 
-class IngredientSchema(BaseModel):
+class IngredientItem(BaseModel):
     """Single ingredient with amount, unit, name and optional note."""
     amount: str
     unit: Optional[str] = None
     name: str
     note: Optional[str] = None
+
+
+class IngredientSection(BaseModel):
+    """A named section or grouping of ingredients."""
+    section_name: Optional[str] = None
+    ingredients: list[IngredientItem]
 
 
 class RecipeCreate(BaseModel):
@@ -90,7 +96,7 @@ class RecipeCreate(BaseModel):
     servings: Optional[int] = None
     prep_time_mins: Optional[int] = None
     cook_time_mins: Optional[int] = None
-    ingredients: list[IngredientSchema]
+    ingredient_sections: list[IngredientSection]
     steps: list[str]
     tags: list[str] = []
     notes: Optional[str] = None
@@ -105,7 +111,7 @@ class RecipeUpdate(BaseModel):
     servings: Optional[int] = None
     prep_time_mins: Optional[int] = None
     cook_time_mins: Optional[int] = None
-    ingredients: Optional[list[IngredientSchema]] = None
+    ingredient_sections: Optional[list[IngredientSection]] = None
     steps: Optional[list[str]] = None
     tags: Optional[list[str]] = None
     notes: Optional[str] = None
@@ -147,7 +153,7 @@ def _recipe_to_dict(recipe: Recipe, summary: bool = False) -> dict[str, Any]:
         base.update(
             {
                 "source_url": recipe.source_url,
-                "ingredients": recipe.ingredients_list,
+                "ingredient_sections": recipe.ingredients_list,
                 "steps": recipe.steps_list,
                 "notes": recipe.notes,
             }
@@ -266,10 +272,10 @@ async def create_recipe(
     Raises:
         HTTPException: 422 if validation fails (handled by FastAPI).
     """
-    if not body.ingredients:
+    if not body.ingredient_sections:
         raise HTTPException(
             status_code=422,
-            detail={"error": "validation", "field": "ingredients", "message": "Must not be empty"},
+            detail={"error": "validation", "field": "ingredient_sections", "message": "Must not be empty"},
         )
     if not body.steps:
         raise HTTPException(
@@ -287,7 +293,7 @@ async def create_recipe(
         cook_time_mins=body.cook_time_mins,
         notes=body.notes,
     )
-    recipe.ingredients_list = [i.model_dump() for i in body.ingredients]
+    recipe.ingredients_list = [i.model_dump() for i in body.ingredient_sections]
     recipe.steps_list = body.steps
     recipe.tags_list = [t.strip().lower() for t in body.tags]
 
@@ -328,7 +334,7 @@ async def update_recipe(
     update_data = body.model_dump(exclude_unset=True)
 
     for field, value in update_data.items():
-        if field == "ingredients":
+        if field == "ingredient_sections":
             recipe.ingredients_list = [
                 i if isinstance(i, dict) else i.model_dump() for i in value
             ]

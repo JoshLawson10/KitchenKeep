@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Recipe — KitchenKeep</title>
   <meta name="description" content="Add or edit a recipe in your collection." />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 <body data-page="edit">
 
@@ -110,13 +110,13 @@
         <section class="form-section" aria-labelledby="section-ingredients">
           <h2 id="section-ingredients">Ingredients <span aria-hidden="true">*</span></h2>
           <p class="text-sm text-muted" style="margin-bottom:.75rem;">
-            Drag the ⠿ handle to reorder. Amount and unit are optional for items like "salt to taste".
+            Group ingredients by sections (e.g. "Main", "Dressing"). Drag constraints apply within sections.
           </p>
-          <div id="ing-list" class="dynamic-list" aria-label="Ingredient rows"></div>
-          <span id="ing-error" class="field-error" role="alert">Add at least one ingredient.</span>
-          <button id="add-ing-btn" type="button" class="btn btn-ghost btn-sm" style="margin-top:.5rem;">
+          <div id="sections-container" aria-label="Ingredient sections"></div>
+          <span id="ing-error" class="field-error" role="alert">Add at least one section with one ingredient.</span>
+          <button id="add-section-btn" type="button" class="btn btn-outline" style="margin-top:.5rem;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-            Add Ingredient
+            Add Group
           </button>
         </section>
 
@@ -156,6 +156,6 @@
 
   <div id="toast-container" aria-live="polite"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
