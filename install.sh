@@ -122,7 +122,7 @@ fi
 # ================================================================
 step "INSTALLING SYSTEM PACKAGES"
 apt-get update -qq
-apt-get install -y python3 python3-pip python3-venv curl git ufw
+apt-get install -y python3 python3-pip python3-venv curl git ufw zstd
 info "System packages installed"
 
 # ================================================================
