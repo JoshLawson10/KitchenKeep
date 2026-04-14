@@ -426,24 +426,24 @@
     let currentServings = null;
     let baseIngredients = [];
 
-    const titleEl      = document.getElementById("recipe-title");
-    const descEl       = document.getElementById("recipe-desc");
-    const tagsEl       = document.getElementById("recipe-tags");
-    const prepEl       = document.getElementById("recipe-prep");
-    const cookEl       = document.getElementById("recipe-cook");
+    const titleEl = document.getElementById("recipe-title");
+    const descEl = document.getElementById("recipe-desc");
+    const tagsEl = document.getElementById("recipe-tags");
+    const prepEl = document.getElementById("recipe-prep");
+    const cookEl = document.getElementById("recipe-cook");
     const servingsDisp = document.getElementById("servings-display");
-    const ingList      = document.getElementById("ingredient-list");
-    const stepsList    = document.getElementById("steps-list");
-    const notesEl      = document.getElementById("recipe-notes");
-    const notesText    = document.getElementById("recipe-notes-text");
-    const sourceEl     = document.getElementById("recipe-source");
-    const sourceLink   = document.getElementById("source-link");
-    const heroImage    = document.getElementById("hero-image");
+    const ingList = document.getElementById("ingredient-list");
+    const stepsList = document.getElementById("steps-list");
+    const notesEl = document.getElementById("recipe-notes");
+    const notesText = document.getElementById("recipe-notes-text");
+    const sourceEl = document.getElementById("recipe-source");
+    const sourceLink = document.getElementById("source-link");
+    const heroImage = document.getElementById("hero-image");
     const heroPlaceholder = document.getElementById("hero-placeholder");
-    const editBtn      = document.getElementById("edit-btn");
-    const deleteBtn    = document.getElementById("delete-btn");
-    const minusBtn     = document.getElementById("servings-minus");
-    const plusBtn      = document.getElementById("servings-plus");
+    const editBtn = document.getElementById("edit-btn");
+    const deleteBtn = document.getElementById("delete-btn");
+    const minusBtn = document.getElementById("servings-minus");
+    const plusBtn = document.getElementById("servings-plus");
 
     async function loadRecipe() {
       try {
@@ -496,7 +496,7 @@
       if (servingsDisp) setTextSafe(servingsDisp, currentServings);
 
       // Ingredients (store base for scaling)
-      baseIngredients = r.ingredients || [];
+      baseIngredients = r.ingredient_sections || r.ingredients || [];
       renderIngredients(1); // scale factor = 1
 
       // Steps
@@ -536,7 +536,7 @@
     function renderIngredients(scale) {
       if (!ingList) return;
       ingList.innerHTML = "";
-      
+
       baseIngredients.forEach((section) => {
         // Section Header
         if (section.section_name) {
@@ -631,27 +631,27 @@
     const recipeId = urlParams.get("id");
     const isEdit = !!recipeId;
 
-    const formTitle   = document.getElementById("form-title");
-    const form        = document.getElementById("recipe-form");
-    const saveBtn     = document.getElementById("save-btn");
-    const cancelBtn   = document.getElementById("cancel-btn");
+    const formTitle = document.getElementById("form-title");
+    const form = document.getElementById("recipe-form");
+    const saveBtn = document.getElementById("save-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
 
     // Form fields
-    const fTitle      = document.getElementById("f-title");
-    const fDesc       = document.getElementById("f-desc");
-    const fSourceUrl  = document.getElementById("f-source-url");
-    const fImageUrl   = document.getElementById("f-image-url");
-    const fServings   = document.getElementById("f-servings");
-    const fPrep       = document.getElementById("f-prep");
-    const fCook       = document.getElementById("f-cook");
-    const fTags       = document.getElementById("f-tags");
+    const fTitle = document.getElementById("f-title");
+    const fDesc = document.getElementById("f-desc");
+    const fSourceUrl = document.getElementById("f-source-url");
+    const fImageUrl = document.getElementById("f-image-url");
+    const fServings = document.getElementById("f-servings");
+    const fPrep = document.getElementById("f-prep");
+    const fCook = document.getElementById("f-cook");
+    const fTags = document.getElementById("f-tags");
     const fTagsPreview = document.getElementById("f-tags-preview");
-    const fNotes      = document.getElementById("f-notes");
-    const ingList     = document.getElementById("ing-list");
-    const addIngBtn   = document.getElementById("add-ing-btn");
-    const stepsList   = document.getElementById("steps-list");
-    const addStepBtn  = document.getElementById("add-step-btn");
-    const formError   = document.getElementById("form-error");
+    const fNotes = document.getElementById("f-notes");
+    const ingList = document.getElementById("ing-list");
+    const addIngBtn = document.getElementById("add-ing-btn");
+    const stepsList = document.getElementById("steps-list");
+    const addStepBtn = document.getElementById("add-step-btn");
+    const formError = document.getElementById("form-error");
 
     if (isEdit && formTitle) setTextSafe(formTitle, "Edit Recipe");
 
@@ -778,7 +778,7 @@
       // Section Header (Input + Remove btn)
       const header = document.createElement("div");
       header.className = "ingredient-section-header";
-      
+
       const titleInp = document.createElement("input");
       titleInp.type = "text";
       titleInp.className = "section-title";
@@ -791,7 +791,7 @@
       removeSecBtn.className = "section-remove-btn";
       removeSecBtn.title = "Remove Section";
       removeSecBtn.textContent = "✕";
-      removeSecBtn.addEventListener("click", function() {
+      removeSecBtn.addEventListener("click", function () {
         section.remove();
       });
       header.appendChild(removeSecBtn);
@@ -1008,7 +1008,7 @@
       // Ingredients check
       const ingErr = document.getElementById("ing-error");
       const sections = sectionsContainer ? sectionsContainer.querySelectorAll(".ingredient-section") : [];
-      
+
       let hasIngredient = false;
       sections.forEach(sec => {
         const rows = sec.querySelectorAll(".ingredient-row");
@@ -1017,7 +1017,7 @@
           if (nameInput && nameInput.value.trim()) hasIngredient = true;
         });
       });
-      
+
       if (!hasIngredient) {
         if (ingErr) ingErr.classList.add("visible");
         valid = false;
@@ -1056,7 +1056,7 @@
             note: r.querySelector(".inp-note") ? r.querySelector(".inp-note").value.trim() || null : null,
           };
         }).filter((i) => i.name);
-        
+
         return {
           section_name: sectionName,
           ingredients: items
@@ -1154,8 +1154,8 @@
   // ------------------------------------------------------------------
   document.addEventListener("DOMContentLoaded", function () {
     const page = document.body.dataset.page;
-    if (page === "index" && App.initIndex)   App.initIndex();
+    if (page === "index" && App.initIndex) App.initIndex();
     if (page === "recipe" && App.initRecipe) App.initRecipe();
-    if (page === "edit" && App.initEdit)     App.initEdit();
+    if (page === "edit" && App.initEdit) App.initEdit();
   });
 })();
