@@ -4,13 +4,13 @@
 # Idempotent: safe to run more than once.
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/<your-username>/kitchenkeep/main/install.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/JoshLawson10/kitchenkeep/main/install.sh)
 #   bash <(curl -fsSL ...) --yes    # skip interactive prompts
 
 set -e
 
 # -------- Repo URL (change this when forking) --------
-REPO_URL="https://github.com/YOUR_USERNAME/kitchenkeep.git"
+REPO_URL="https://github.com/JoshLawson10/kitchenkeep.git"
 INSTALL_DIR="/opt/kitchenkeep"
 SRC_DIR="${INSTALL_DIR}/src"
 DATA_DIR="${INSTALL_DIR}/data"
