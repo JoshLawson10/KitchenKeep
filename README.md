@@ -37,13 +37,13 @@ on your server.
 Paste this single command into the container's root shell:
 
 ```sh
-bash <(curl -fsSL https://raw.githubusercontent.com/<your-username>/kitchenkeep/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/JoshLawson10/kitchenkeep/main/install.sh)
 ```
 
 To skip all interactive prompts (useful for automation):
 
 ```sh
-bash <(curl -fsSL https://raw.githubusercontent.com/<your-username>/kitchenkeep/main/install.sh) --yes
+bash <(curl -fsSL https://raw.githubusercontent.com/JoshLawson10/kitchenkeep/main/install.sh) --yes
 ```
 
 The installer will:
